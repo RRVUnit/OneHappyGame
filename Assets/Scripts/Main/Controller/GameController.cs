@@ -13,6 +13,9 @@ namespace Main.Controller
         {
             _ui = ui;
             _world = world;
+
+            _ui.WarningsCount = 0;
+            _ui.DifferenciesCount = 5;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Main
         private GameWorldComponent _gameWorldComponent;
         private GameController _gameController;
 
-        private void Start()
+        private void Awake()
         {
             PrefetchObjects();
             Init();
