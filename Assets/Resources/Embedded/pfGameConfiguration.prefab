@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &249452478747474613
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4760985514635833949}
+  - component: {fileID: -1946781295229591999}
+  m_Layer: 0
+  m_Name: pfGameConfiguration
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4760985514635833949
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 249452478747474613}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 769.8851, y: 403.6771, z: -42.625}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-1946781295229591999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 249452478747474613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ca4663480a74acd911445faae03fde7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stageConfigurations:
+  - MaxWarningsCount: 2
+    DifferencesCount: 5
+    FirstPicture: {fileID: 21300000, guid: 725bef58f2ad86844aa883015895b7d6, type: 3}
+    SecondPicture: {fileID: 21300000, guid: 3e6c94dade3677c44b6c13e26d0a9065, type: 3}
+  - MaxWarningsCount: 2
+    DifferencesCount: 5
+    FirstPicture: {fileID: 21300000, guid: e66d1dfadd05a674db05cc2e6b185d7a, type: 3}
+    SecondPicture: {fileID: 21300000, guid: e59c6588293654643817c03366e1dfe4, type: 3}
+  - MaxWarningsCount: 2
+    DifferencesCount: 5
+    FirstPicture: {fileID: 21300000, guid: bfdae97a9405b5443be1306e6a7f97f6, type: 3}
+    SecondPicture: {fileID: 21300000, guid: 01bef537fbfa29746bf5684246c6eaa9, type: 3}

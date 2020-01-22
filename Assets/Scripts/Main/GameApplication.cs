@@ -1,5 +1,6 @@
 using GameKit.Util.Extension;
 using Main.Controller;
+using Main.Repository;
 using Main.UI;
 using Main.World;
 using UnityEngine;
@@ -17,6 +18,7 @@ namespace Main
         private GameScreenUIComponent _gameScreenUIComponent;
         private GameWorldComponent _gameWorldComponent;
         private GameController _gameController;
+        private GameConfigurationRepository _configurationRepository;
 
         private void Awake()
         {
@@ -28,9 +30,13 @@ namespace Main
         {
             _gameScreenUIComponent = _ui.AddComponent<GameScreenUIComponent>();
             _gameWorldComponent = _world.AddComponent<GameWorldComponent>();
-            
             _gameController = gameObject.AddComponent<GameController>();
-            _gameController.Init(_gameWorldComponent, _gameScreenUIComponent);
+
+            _configurationRepository = new GameConfigurationRepository();
+            _configurationRepository.Load();
+            
+            _gameController.Init(_gameWorldComponent, _gameScreenUIComponent, _configurationRepository.GameConfiguration);
+            _gameController.StartGame();
         }
 
         private void PrefetchObjects()

@@ -23,7 +23,7 @@ namespace Main.UI
             _warningsLabel = gameObject.GetChildRecursive(WARNINGS_COUNT_LABEL_NAME)?.GetComponent<Text>();
         }
         
-        public int DifferenciesCount
+        public int DifferencesCount
         {
             set { _differenciesLabel.text = "Отличий: " + value; }
         }
