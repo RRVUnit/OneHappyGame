@@ -124,19 +124,20 @@ namespace Main.Controller
             CreateItemsContainer("MatchMarksContainer", spriteContainer);
             
             int matchObjectsCount = 0;
+            GameObject matchMarksContainer = spriteContainer.RequireChildRecursive("MatchObjects");
             _currentGameStageModel.Differences.ForEach(d => {
                 GameObject matchObject = new GameObject();
                 matchObject.name = "MatchObject" + matchObjectsCount;
                 
                 BoxCollider2D boxCollider2D = matchObject.AddComponent<BoxCollider2D>();
-                boxCollider2D.size = new Vector2(d.Size, d.Size);
+                boxCollider2D.size = d.Dimentions;
                 
                 matchObject.transform.position = d.Position;
             
                 GamePictureController itemPictureClickManager = matchObject.AddComponent<GamePictureController>();
                 itemPictureClickManager.OnPictureClick += OnPictureItemClick;
 
-                matchObject.transform.SetParent(spriteContainer.transform);
+                matchObject.transform.SetParent(matchMarksContainer.transform, false);
                 
                 matchObjectsCount++;
             });

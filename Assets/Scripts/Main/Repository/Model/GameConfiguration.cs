@@ -35,6 +35,7 @@ namespace Main.Repository.Model
     public struct PictureDifferenceSpot
     {
         public float Size;
+        public Vector2 Dimentions;
         public Vector2 Position;
     }
 }

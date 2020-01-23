@@ -46,23 +46,58 @@ MonoBehaviour:
   _stageConfigurations:
   - MaxWarningsCount: 2
     Differences:
+    - Size: 0.57
+      Dimentions: {x: 0.57, y: 0.57}
+      Position: {x: -2.1, y: -0.26}
+    - Size: 0.77
+      Dimentions: {x: 0.77, y: 0.77}
+      Position: {x: 0.43, y: -0.57}
+    - Size: 0.82
+      Dimentions: {x: 0.82, y: 0.82}
+      Position: {x: 0.83, y: 1.22}
     - Size: 1
-      Position: {x: 2, y: 2}
-    - Size: 1
-      Position: {x: 4, y: 4}
-    - Size: 1
-      Position: {x: 6, y: 6}
-    - Size: 1
-      Position: {x: 8, y: 8}
-    - Size: 1
-      Position: {x: 10, y: 10}
+      Dimentions: {x: 1, y: 1}
+      Position: {x: -0.93, y: 1.71}
+    - Size: 0.5
+      Dimentions: {x: 0.5, y: 0.5}
+      Position: {x: 3.147, y: 1.377}
     FirstPicture: {fileID: 21300000, guid: 725bef58f2ad86844aa883015895b7d6, type: 3}
     SecondPicture: {fileID: 21300000, guid: 3e6c94dade3677c44b6c13e26d0a9065, type: 3}
   - MaxWarningsCount: 2
-    Differences: []
+    Differences:
+    - Size: 0
+      Dimentions: {x: 1, y: 1.81}
+      Position: {x: -0.59, y: 0.57}
+    - Size: 0
+      Dimentions: {x: 0.33, y: 0.63}
+      Position: {x: -3.14, y: 1.84}
+    - Size: 0
+      Dimentions: {x: 0.54, y: 0.78}
+      Position: {x: -3.13, y: -1.84}
+    - Size: 0
+      Dimentions: {x: 1, y: 1}
+      Position: {x: 1.18, y: -1.74}
+    - Size: 0
+      Dimentions: {x: 1, y: 1.5}
+      Position: {x: 2.83, y: 0.7}
     FirstPicture: {fileID: 21300000, guid: e66d1dfadd05a674db05cc2e6b185d7a, type: 3}
     SecondPicture: {fileID: 21300000, guid: e59c6588293654643817c03366e1dfe4, type: 3}
   - MaxWarningsCount: 2
-    Differences: []
+    Differences:
+    - Size: 0
+      Dimentions: {x: 0.68, y: 0.68}
+      Position: {x: -0.35, y: 0.06}
+    - Size: 0
+      Dimentions: {x: 0.79, y: 0.5}
+      Position: {x: 2.92, y: 1.32}
+    - Size: 0
+      Dimentions: {x: 1.28, y: 0.61}
+      Position: {x: 0.87, y: 2.1}
+    - Size: 0
+      Dimentions: {x: 0.8, y: 0.8}
+      Position: {x: 0.67, y: -1.88}
+    - Size: 0
+      Dimentions: {x: 0.78, y: 1.47}
+      Position: {x: -2.77, y: 0.39}
     FirstPicture: {fileID: 21300000, guid: bfdae97a9405b5443be1306e6a7f97f6, type: 3}
     SecondPicture: {fileID: 21300000, guid: 01bef537fbfa29746bf5684246c6eaa9, type: 3}
