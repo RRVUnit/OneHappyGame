@@ -1,3 +1,4 @@
+using System;
 using GameKit.Util.Extension;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,6 +35,21 @@ namespace Main.UI
         public int WarningsCount
         {
             set { _warningsLabel.text = "Ошибок: " + value + (MaxWarningsCount > 0 ? (" / " + MaxWarningsCount) : ""); }
+        }
+
+        public void ShowStageCompletedDialog(Action callback)
+        {
+            callback.Invoke();
+        }
+
+        public void ShowWinGameDialog(Action restartGameCallback)
+        {
+            restartGameCallback.Invoke();
+        }
+
+        public void ShowStageFailedDialog(Action restartStageCallback)
+        {
+            restartStageCallback.Invoke();
         }
     }
 }

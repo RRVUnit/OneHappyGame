@@ -28,6 +28,7 @@ namespace Main.Controller
 
         public void StartGame()
         {
+            _stageIndex = 0;
             NextStage();
         }
 
@@ -36,7 +37,12 @@ namespace Main.Controller
             if (AlreadyChecked(goName)) {
                 return;
             }
+            GameObject go = _world.gameObject.RequireChildRecursive(goName);
+            
             AddFoundMark(goName);
+            
+            _currentGameStageModel.MarkedDifferenceGONames.Add(goName);
+            
             IncDifferencesFoundCount();
             CheckStageCompleted();
         }
@@ -45,6 +51,8 @@ namespace Main.Controller
         {
             AddFailureMark(position);
             IncWarningsCount();
+
+            CheckStageFailed();
         }
 
         private void InitStageParameters()
@@ -71,7 +79,12 @@ namespace Main.Controller
 
         private void ShowWinGameDialog()
         {
-            Debug.Log("GAME OVER");
+            _ui.ShowWinGameDialog(OnRestartGame);
+        }
+
+        private void OnRestartGame()
+        {
+            StartGame();
         }
 
         private void ClearPrevStage()
@@ -116,8 +129,8 @@ namespace Main.Controller
             spriteRenderer.sprite = pictureSprite;
             
             pictureContainer.AddComponent<BoxCollider2D>();
-            GamePictureController gamePictureController = pictureContainer.AddComponent<GamePictureController>();
-            gamePictureController.OnPictureClick += OnPictureClick;
+            GamePictureItemMouseManager gamePictureItemMouseManager = pictureContainer.AddComponent<GamePictureItemMouseManager>();
+            gamePictureItemMouseManager.OnPictureClick += OnPictureClick;
 
             CreateItemsContainer("MatchObjects", spriteContainer);
             CreateItemsContainer("ErrorMarksContainer", spriteContainer);
@@ -134,7 +147,7 @@ namespace Main.Controller
                 
                 matchObject.transform.position = d.Position;
             
-                GamePictureController itemPictureClickManager = matchObject.AddComponent<GamePictureController>();
+                GamePictureItemMouseManager itemPictureClickManager = matchObject.AddComponent<GamePictureItemMouseManager>();
                 itemPictureClickManager.OnPictureClick += OnPictureItemClick;
 
                 matchObject.transform.SetParent(matchMarksContainer.transform, false);
@@ -160,18 +173,32 @@ namespace Main.Controller
 
         private void CheckStageCompleted()
         {
-            if (_currentGameStageModel.FoundDifferencesCount >= _currentGameStageModel.MaxDifferencesCount) {
-                ShowStageCompletedDialog();
+            if (_currentGameStageModel.FoundDifferencesCount < _currentGameStageModel.MaxDifferencesCount) {
+                return;
             }
+            ShowStageCompletedDialog();
+        }
+
+        private void CheckStageFailed()
+        {
+            if (_currentGameStageModel.WarningsCount == 0 || _currentGameStageModel.WarningsCount <= _currentGameStageModel.MaxWarningsCount) {
+                return;
+            }
+            ShowStageFailedDialog();
         }
 
         private void AddFoundMark(string goName)
         {
             CurrentStagePictures.ForEach(p => {
+                GameObject go = p.GetChildRecursive(goName);
+                BoxCollider2D colliderObject = go.GetComponent<BoxCollider2D>();
                 GameObject container = p.RequireChildRecursive("MatchMarksContainer");
                 GameObject mark = Instantiate(_world.CorrectMark, container.transform);
+
+                Transform markBg = mark.RequireChildRecursive("CheckMarkBg").transform;
+                markBg.localScale = colliderObject.size;
+                mark.transform.position = go.transform.position;
             });
-            _currentGameStageModel.MarkedDifferenceGONames.Add(goName);
         }
 
         private void IncDifferencesFoundCount()
@@ -182,11 +209,17 @@ namespace Main.Controller
 
         private void ShowStageCompletedDialog()
         {
-            _stageIndex++;
-            
-            NextStage();
+            _ui.ShowStageCompletedDialog(() => {
+                _stageIndex++;
+                NextStage();
+            });
         }
 
+        private void ShowStageFailedDialog()
+        {
+            _ui.ShowStageFailedDialog(NextStage);
+        }
+        
         private void IncWarningsCount()
         {
             ++_currentGameStageModel.WarningsCount;
@@ -197,7 +230,8 @@ namespace Main.Controller
         {
             CurrentStagePictures.ForEach(p => {
                 GameObject container = p.RequireChildRecursive("ErrorMarksContainer");
-                GameObject mark = Instantiate(_world.ErrorMark, container.transform);
+                GameObject mark = Instantiate(_world.ErrorMark, container.transform, false);
+                mark.transform.localPosition = position;
             });
         }
 
