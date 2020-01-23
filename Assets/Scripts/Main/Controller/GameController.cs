@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Security.Cryptography;
+using GameKit.Util.Extension;
 using Main.Model;
 using Main.Repository.Model;
 using Main.UI;
@@ -10,18 +10,41 @@ namespace Main.Controller
 {
     public class GameController : MonoBehaviour
     {
+        private List<GameObject> CurrentStagePictures { get; set; }
+        
         private GameWorldComponent _world;
         private GameScreenUIComponent _ui;
         private GameConfiguration _configuration;
 
         private GameStageModel _currentGameStageModel;
         private int _stageIndex;
-        
+
         public void Init(GameWorldComponent world, GameScreenUIComponent ui, GameConfiguration configuration)
         {
             _ui = ui;
             _world = world;
             _configuration = configuration;
+        }
+
+        public void StartGame()
+        {
+            NextStage();
+        }
+
+        private void OnPictureItemClick(string goName, Vector3 position)
+        {
+            if (AlreadyChecked(goName)) {
+                return;
+            }
+            AddFoundMark(goName);
+            IncDifferencesFoundCount();
+            CheckStageCompleted();
+        }
+
+        private void OnPictureClick(string goName, Vector3 position)
+        {
+            AddFailureMark(position);
+            IncWarningsCount();
         }
 
         private void InitStageParameters()
@@ -31,11 +54,6 @@ namespace Main.Controller
 
             _ui.DifferencesFound = 0;
             _ui.WarningsCount = 0;
-        }
-
-        public void StartGame()
-        {
-            NextStage();
         }
 
         private void NextStage()
@@ -58,20 +76,21 @@ namespace Main.Controller
 
         private void ClearPrevStage()
         {
-            if (FirstPictureContainer != null) {
-                Destroy(FirstPictureContainer);
-                FirstPictureContainer = null;
+            if (CurrentStagePictures == null || CurrentStagePictures.Count == 0) {
+                return;
             }
-            if (SecondPictureContainer != null) {
-                Destroy(SecondPictureContainer);
-                SecondPictureContainer = null;
-            }
+            CurrentStagePictures.ForEach(p => {
+                Destroy(p);
+                p = null;
+            });
         }
 
         private void LoadStageAssets()
         {
-            FirstPictureContainer = CreatePicture(_currentGameStageModel.FirstPicture);
-            SecondPictureContainer = CreatePicture(_currentGameStageModel.SecondPicture);
+            CurrentStagePictures = new List<GameObject> {
+                    CreatePicture(_currentGameStageModel.FirstPicture),
+                    CreatePicture(_currentGameStageModel.SecondPicture)
+            };
 
             AlignPictures();
         }
@@ -79,11 +98,13 @@ namespace Main.Controller
         private void AlignPictures()
         {
             float offset = 0.05F;
-            Vector3 bounds = FirstPictureContainer.GetComponentInChildren<SpriteRenderer>().sprite.bounds.extents;
-            FirstPictureContainer.transform.position = new Vector3(0, - bounds.y - offset, 0);
+            GameObject firstPicture = CurrentStagePictures[0];
+            Vector3 bounds = firstPicture.GetComponentInChildren<SpriteRenderer>().sprite.bounds.extents;
+            firstPicture.transform.position = new Vector3(0, - bounds.y - offset, 0);
             
-            bounds = SecondPictureContainer.GetComponentInChildren<SpriteRenderer>().sprite.bounds.extents;
-            SecondPictureContainer.transform.position = new Vector3(0, bounds.y + offset, 0);
+            GameObject secondPicture = CurrentStagePictures[1];
+            bounds = secondPicture.GetComponentInChildren<SpriteRenderer>().sprite.bounds.extents;
+            secondPicture.transform.position = new Vector3(0, bounds.y + offset, 0);
         }
 
         private GameObject CreatePicture(Sprite pictureSprite)
@@ -95,9 +116,13 @@ namespace Main.Controller
             spriteRenderer.sprite = pictureSprite;
             
             pictureContainer.AddComponent<BoxCollider2D>();
-            GamePictureItemClickManager gamePictureItemClickManager = pictureContainer.AddComponent<GamePictureItemClickManager>();
-            gamePictureItemClickManager.OnPictureClick += OnPictureClick;
+            GamePictureController gamePictureController = pictureContainer.AddComponent<GamePictureController>();
+            gamePictureController.OnPictureClick += OnPictureClick;
 
+            CreateItemsContainer("MatchObjects", spriteContainer);
+            CreateItemsContainer("ErrorMarksContainer", spriteContainer);
+            CreateItemsContainer("MatchMarksContainer", spriteContainer);
+            
             int matchObjectsCount = 0;
             _currentGameStageModel.Differences.ForEach(d => {
                 GameObject matchObject = new GameObject();
@@ -108,7 +133,7 @@ namespace Main.Controller
                 
                 matchObject.transform.position = d.Position;
             
-                GamePictureItemClickManager itemPictureClickManager = matchObject.AddComponent<GamePictureItemClickManager>();
+                GamePictureController itemPictureClickManager = matchObject.AddComponent<GamePictureController>();
                 itemPictureClickManager.OnPictureClick += OnPictureItemClick;
 
                 matchObject.transform.SetParent(spriteContainer.transform);
@@ -120,14 +145,11 @@ namespace Main.Controller
             return spriteContainer;
         }
 
-        private void OnPictureItemClick(string goName, Vector3 position)
+        private void CreateItemsContainer(string containerName, GameObject rootContainer)
         {
-            if (AlreadyChecked(goName)) {
-                return;
-            }
-            AddFoundMark(goName);
-            IncDifferencesFoundCount();
-            CheckStageCompleted();
+            GameObject container = new GameObject(containerName);
+            container.transform.position = new Vector3(0, 0, -0.1F);
+            container.transform.SetParent(rootContainer.transform);
         }
 
         private bool AlreadyChecked(string goName)
@@ -144,6 +166,10 @@ namespace Main.Controller
 
         private void AddFoundMark(string goName)
         {
+            CurrentStagePictures.ForEach(p => {
+                GameObject container = p.RequireChildRecursive("MatchMarksContainer");
+                GameObject mark = Instantiate(_world.CorrectMark, container.transform);
+            });
             _currentGameStageModel.MarkedDifferenceGONames.Add(goName);
         }
 
@@ -160,21 +186,18 @@ namespace Main.Controller
             NextStage();
         }
 
-        private void OnPictureClick(string goName, Vector3 position)
-        {
-            AddFailureMark();
-            IncWarningsCount();
-        }
-
         private void IncWarningsCount()
         {
             ++_currentGameStageModel.WarningsCount;
             _ui.WarningsCount = _currentGameStageModel.WarningsCount;
         }
 
-        private void AddFailureMark()
+        private void AddFailureMark(Vector3 position)
         {
-            
+            CurrentStagePictures.ForEach(p => {
+                GameObject container = p.RequireChildRecursive("ErrorMarksContainer");
+                GameObject mark = Instantiate(_world.ErrorMark, container.transform);
+            });
         }
 
         private void CreateStageModel()
@@ -187,9 +210,5 @@ namespace Main.Controller
 
             _currentGameStageModel = gameStageModel;
         }
-        
-        private GameObject FirstPictureContainer { get; set; }
-        
-        private GameObject SecondPictureContainer { get; set; }
     }
 }
