@@ -12,6 +12,9 @@ namespace Main.UI
         private Text _differenciesLabel;
         private Text _warningsLabel;
 
+        public int MaxDifferencesCount { get; set; }
+        public int MaxWarningsCount { get; set; }
+        
         private void Awake()
         {
             PrefetchComponents();
@@ -23,14 +26,14 @@ namespace Main.UI
             _warningsLabel = gameObject.GetChildRecursive(WARNINGS_COUNT_LABEL_NAME)?.GetComponent<Text>();
         }
         
-        public int DifferencesCount
+        public int DifferencesFound
         {
-            set { _differenciesLabel.text = "Отличий: " + value; }
+            set { _differenciesLabel.text = "Отличий: " + value + " / " + MaxDifferencesCount; }
         }
         
         public int WarningsCount
         {
-            set { _warningsLabel.text = "Ошибок: " + value; }
+            set { _warningsLabel.text = "Ошибок: " + value + (MaxWarningsCount > 0 ? (" / " + MaxWarningsCount) : ""); }
         }
     }
 }

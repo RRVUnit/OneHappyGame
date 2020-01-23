@@ -25,9 +25,16 @@ namespace Main.Repository.Model
     {
         public int MaxWarningsCount;
 
-        public int DifferencesCount;
+        public List<PictureDifferenceSpot> Differences;
 
         public Sprite FirstPicture;
         public Sprite SecondPicture;
+    }
+
+    [Serializable]
+    public struct PictureDifferenceSpot
+    {
+        public float Size;
+        public Vector2 Position;
     }
 }

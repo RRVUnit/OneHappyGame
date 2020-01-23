@@ -45,14 +45,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _stageConfigurations:
   - MaxWarningsCount: 2
-    DifferencesCount: 5
+    Differences:
+    - Size: 1
+      Position: {x: 2, y: 2}
+    - Size: 1
+      Position: {x: 4, y: 4}
+    - Size: 1
+      Position: {x: 6, y: 6}
+    - Size: 1
+      Position: {x: 8, y: 8}
+    - Size: 1
+      Position: {x: 10, y: 10}
     FirstPicture: {fileID: 21300000, guid: 725bef58f2ad86844aa883015895b7d6, type: 3}
     SecondPicture: {fileID: 21300000, guid: 3e6c94dade3677c44b6c13e26d0a9065, type: 3}
   - MaxWarningsCount: 2
-    DifferencesCount: 5
+    Differences: []
     FirstPicture: {fileID: 21300000, guid: e66d1dfadd05a674db05cc2e6b185d7a, type: 3}
     SecondPicture: {fileID: 21300000, guid: e59c6588293654643817c03366e1dfe4, type: 3}
   - MaxWarningsCount: 2
-    DifferencesCount: 5
+    Differences: []
     FirstPicture: {fileID: 21300000, guid: bfdae97a9405b5443be1306e6a7f97f6, type: 3}
     SecondPicture: {fileID: 21300000, guid: 01bef537fbfa29746bf5684246c6eaa9, type: 3}
