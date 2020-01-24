@@ -11,7 +11,7 @@ namespace Main
     {
         private const string GAME_SCREEN_UI_NAME = "GameScreenUI";
         private const string WORLD_NAME = "World";
-        
+
         private GameObject _world;
         private GameObject _ui;
 
