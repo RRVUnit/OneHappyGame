@@ -168,6 +168,7 @@ GameObject:
   m_Component:
   - component: {fileID: 944527006391219154}
   - component: {fileID: 4524630489415963612}
+  - component: {fileID: 162683958916061660}
   m_Layer: 0
   m_Name: pfMarkedSpot
   m_TagString: Untagged
@@ -210,3 +211,15 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &162683958916061660
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9165710573316991064}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b5110851bf24e65bf7ec8d9f03c5182, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

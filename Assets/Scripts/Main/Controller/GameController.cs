@@ -10,6 +10,13 @@ namespace Main.Controller
 {
     public class GameController : MonoBehaviour
     {
+        private const string MATCH_OBJECTS_CONTAINER_NAME = "MatchObjects";
+        private const string ERROR_MARKS_CONTAINER_NAME = "ErrorMarksContainer";
+        private const string MATCH_MARKS_CONTAINER_NAME = "MatchMarksContainer";
+        private const string PICTURE_CONTAINER_NAME = "PictureContainer";
+        private const string DIFF_SPRITE_CONTAINER_NAME = "DiffSpriteContainer";
+        private const string MATCH_OBJECT_NAME_PREFIX = "MatchObject";
+        
         private List<GameObject> CurrentStagePictures { get; set; }
         
         private GameWorldComponent _world;
@@ -18,6 +25,8 @@ namespace Main.Controller
 
         private GameStageModel _currentGameStageModel;
         private int _stageIndex;
+
+        private bool Paused { get; set; }
 
         public void Init(GameWorldComponent world, GameScreenUIComponent ui, GameConfiguration configuration)
         {
@@ -34,6 +43,9 @@ namespace Main.Controller
 
         private void OnPictureItemClick(string goName, Vector3 position)
         {
+            if (Paused) {
+                return;
+            }
             if (AlreadyChecked(goName)) {
                 return;
             }
@@ -49,6 +61,10 @@ namespace Main.Controller
 
         private void OnPictureClick(string goName, Vector3 position)
         {
+            if (Paused) {
+                return;
+            }
+            
             AddFailureMark(position);
             IncWarningsCount();
 
@@ -66,19 +82,19 @@ namespace Main.Controller
 
         private void NextStage()
         {
-            if (!_configuration.HasNextStage(_stageIndex)) {
-                ShowWinGameDialog();
-                return;
-            }
             ClearPrevStage();
 
             CreateStageModel();
             InitStageParameters();
             LoadStageAssets();
+
+            Paused = false;
         }
 
         private void ShowWinGameDialog()
         {
+            Paused = true;
+            
             _ui.ShowWinGameDialog(OnRestartGame);
         }
 
@@ -110,20 +126,21 @@ namespace Main.Controller
 
         private void AlignPictures()
         {
-            float offset = 0.05F;
+            const float PICTURES_OFFSET = 0.05F;
+            const float GLOBAL_OFFSET = -.2F;
             GameObject firstPicture = CurrentStagePictures[0];
             Vector3 bounds = firstPicture.GetComponentInChildren<SpriteRenderer>().sprite.bounds.extents;
-            firstPicture.transform.position = new Vector3(0, - bounds.y - offset, 0);
+            firstPicture.transform.position = new Vector3(0, - bounds.y - PICTURES_OFFSET + GLOBAL_OFFSET, 0);
             
             GameObject secondPicture = CurrentStagePictures[1];
             bounds = secondPicture.GetComponentInChildren<SpriteRenderer>().sprite.bounds.extents;
-            secondPicture.transform.position = new Vector3(0, bounds.y + offset, 0);
+            secondPicture.transform.position = new Vector3(0, bounds.y + PICTURES_OFFSET + GLOBAL_OFFSET, 0);
         }
 
         private GameObject CreatePicture(Sprite pictureSprite)
         {
-            GameObject spriteContainer = new GameObject();
-            GameObject pictureContainer = new GameObject("Picture");
+            GameObject spriteContainer = new GameObject(DIFF_SPRITE_CONTAINER_NAME);
+            GameObject pictureContainer = new GameObject(PICTURE_CONTAINER_NAME);
             pictureContainer.transform.SetParent(spriteContainer.transform);
             SpriteRenderer spriteRenderer = pictureContainer.AddComponent<SpriteRenderer>();
             spriteRenderer.sprite = pictureSprite;
@@ -132,15 +149,15 @@ namespace Main.Controller
             GamePictureItemMouseManager gamePictureItemMouseManager = pictureContainer.AddComponent<GamePictureItemMouseManager>();
             gamePictureItemMouseManager.OnPictureClick += OnPictureClick;
 
-            CreateItemsContainer("MatchObjects", spriteContainer);
-            CreateItemsContainer("ErrorMarksContainer", spriteContainer);
-            CreateItemsContainer("MatchMarksContainer", spriteContainer);
+            CreateItemsContainer(MATCH_OBJECTS_CONTAINER_NAME, spriteContainer);
+            CreateItemsContainer(ERROR_MARKS_CONTAINER_NAME, spriteContainer);
+            CreateItemsContainer(MATCH_MARKS_CONTAINER_NAME, spriteContainer);
             
             int matchObjectsCount = 0;
-            GameObject matchMarksContainer = spriteContainer.RequireChildRecursive("MatchObjects");
+            GameObject matchMarksContainer = spriteContainer.RequireChildRecursive(MATCH_OBJECTS_CONTAINER_NAME);
             _currentGameStageModel.Differences.ForEach(d => {
                 GameObject matchObject = new GameObject();
-                matchObject.name = "MatchObject" + matchObjectsCount;
+                matchObject.name = MATCH_OBJECT_NAME_PREFIX + matchObjectsCount;
                 
                 BoxCollider2D boxCollider2D = matchObject.AddComponent<BoxCollider2D>();
                 boxCollider2D.size = d.Dimentions;
@@ -192,10 +209,10 @@ namespace Main.Controller
             CurrentStagePictures.ForEach(p => {
                 GameObject go = p.GetChildRecursive(goName);
                 BoxCollider2D colliderObject = go.GetComponent<BoxCollider2D>();
-                GameObject container = p.RequireChildRecursive("MatchMarksContainer");
+                GameObject container = p.RequireChildRecursive(MATCH_MARKS_CONTAINER_NAME);
                 GameObject mark = Instantiate(_world.CorrectMark, container.transform);
 
-                Transform markBg = mark.RequireChildRecursive("CheckMarkBg").transform;
+                Transform markBg = mark.RequireChildRecursive(CheckMarkController.MARK_BG).transform;
                 markBg.localScale = colliderObject.size;
                 mark.transform.position = go.transform.position;
             });
@@ -209,14 +226,19 @@ namespace Main.Controller
 
         private void ShowStageCompletedDialog()
         {
-            _ui.ShowStageCompletedDialog(() => {
-                _stageIndex++;
-                NextStage();
-            });
+            Paused = true;
+            _stageIndex++;
+            if (!_configuration.HasNextStage(_stageIndex)) {
+                ShowWinGameDialog();
+                return;
+            }
+            _ui.ShowStageCompletedDialog(NextStage);
         }
 
         private void ShowStageFailedDialog()
         {
+            Paused = true;
+            
             _ui.ShowStageFailedDialog(NextStage);
         }
         
@@ -229,7 +251,7 @@ namespace Main.Controller
         private void AddFailureMark(Vector3 position)
         {
             CurrentStagePictures.ForEach(p => {
-                GameObject container = p.RequireChildRecursive("ErrorMarksContainer");
+                GameObject container = p.RequireChildRecursive(ERROR_MARKS_CONTAINER_NAME);
                 GameObject mark = Instantiate(_world.ErrorMark, container.transform, false);
                 mark.transform.localPosition = position;
             });
